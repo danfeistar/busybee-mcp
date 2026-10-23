@@ -1,24 +1,38 @@
 # BusyBee MCP
 
-**Public social media data for AI agents.** One MCP server, ten business-level tools, one schema — for TikTok, Instagram, YouTube, X (Twitter), Douyin and Xiaohongshu.
+**Public social media data for AI agents.** Ten business-level tools, one schema — TikTok, Instagram, YouTube, X (Twitter), Douyin and Xiaohongshu.
 
-Ask your agent *"who are the fastest-growing coffee creators on TikTok right now, and what do their comment sections complain about?"* and it can actually answer, with real data, in one conversation.
+Ask your agent *"who are the fastest-growing coffee creators on TikTok right now, and what do their comment sections complain about?"* — it answers with real data, in one conversation.
 
 ```
-Platforms   TikTok · Instagram · YouTube · X (Twitter) · Douyin · Xiaohongshu
-Transport   MCP Streamable HTTP (remote)  |  stdio (local)
-Tools       10
-Billing     pay per call, price returned with every response
 Endpoint    https://lucydomi.com/mcp
+Protocols   MCP Streamable HTTP · MCP SSE (legacy) · REST/JSON · stdio
+Tools       10
+Billing     pay per call; every response returns cost_usd + balance_usd
 ```
 
 ---
 
-## Why this exists
+## Works with every kind of agent
 
-Most "social data" APIs hand you 1,000+ raw endpoints and let the model guess. Models pick tools probabilistically: the more tools you expose, the more often they pick wrong, burn calls, and blame the product.
+Most "social data for AI" products ship one transport and hope your client speaks it. This server speaks four, on the same host, with the same 10 tools behind all of them.
 
-BusyBee exposes **ten tools that match what a person actually wants to know**, and it normalizes every platform into one field set. Your agent doesn't need to learn six different JSON dialects — and you don't pay for its guesses.
+| Your agent | What it supports | How to connect |
+|---|---|---|
+| **Claude Code** | Streamable HTTP | `claude mcp add busybee --transport http https://lucydomi.com/mcp --header "Authorization: Bearer sk-..."` |
+| **Cursor / Cline / Windsurf / VS Code** | Streamable HTTP | add to `mcp.json` (see below) |
+| **Claude Desktop** | stdio | `uvx busybee-mcp` with `BUSYBEE_API_KEY` |
+| **Older MCP clients (2024-11 era)** | SSE only | `https://lucydomi.com/sse` + `https://lucydomi.com/messages/` |
+| **Dify / n8n / Coze / FastGPT** | OpenAPI / plain HTTP | import `https://lucydomi.com/mcp/openapi.json` (3.1), or `?spec=3.0` for older importers |
+| **LangChain / LlamaIndex / custom code** | tools JSON or HTTP | `https://lucydomi.com/mcp/tools?format=openai`, or call REST directly |
+| **GPT Actions / Zapier / Make** | OpenAPI 3.x | same spec URL, bearer auth |
+| **Anything that can only GET a URL** | query string | `https://lucydomi.com/mcp/v1/search_creators?platform=tiktok&keyword=coffee&api_key=sk-...` |
+
+Discovery document (machine-readable, tells an agent what's available): `https://lucydomi.com/mcp/info`
+
+---
+
+## The 10 tools
 
 | Tool | What it answers |
 |---|---|
@@ -33,7 +47,7 @@ BusyBee exposes **ten tools that match what a person actually wants to know**, a
 | `get_comment_insights` | "Summarize the comment section: sentiment, questions, complaints" |
 | `check_balance` | "How much credit do I have left?" |
 
-`get_comment_insights` is the one people keep open: it samples the comments, then returns sentiment split, question ratio, high-frequency phrases and top-liked comments — so the agent can answer *"what do users actually want"* instead of dumping fifty raw rows.
+`get_comment_insights` is the one people keep open: it samples comments, then returns sentiment split, question ratio, high-frequency phrases and top-liked comments — so the agent answers *"what do users actually want"* instead of dumping fifty raw rows.
 
 ---
 
@@ -56,21 +70,17 @@ Every response also carries `cost_usd` and `balance_usd`, so the agent can budge
 
 ---
 
-## Use it from any MCP client
+## Setup per client
 
-You need an API key: register at [lucydomi.com](https://lucydomi.com), then *Console → API Keys → New key* (`sk-…`). Overseas platforms and China platforms use different key groups.
+Need a key first: register at [lucydomi.com](https://lucydomi.com) → *Console → API Keys → New key* (`sk-…`). Overseas and China platforms use different key groups.
 
 ### Claude Code
-
 ```bash
 claude mcp add busybee --transport http https://lucydomi.com/mcp \
   --header "Authorization: Bearer sk-YOUR_KEY"
 ```
 
-### Cursor / Cline / any client with an MCP JSON config
-
-`~/.cursor/mcp.json`
-
+### Cursor / Cline / Windsurf / VS Code (`~/.cursor/mcp.json`)
 ```json
 {
   "mcpServers": {
@@ -82,8 +92,7 @@ claude mcp add busybee --transport http https://lucydomi.com/mcp \
 }
 ```
 
-### Claude Desktop (stdio via uvx / pip)
-
+### Claude Desktop (local stdio)
 ```json
 {
   "mcpServers": {
@@ -96,69 +105,81 @@ claude mcp add busybee --transport http https://lucydomi.com/mcp \
 }
 ```
 
-### Local Python
+### Legacy SSE clients
+```
+SSE URL      https://lucydomi.com/sse
+Messages URL https://lucydomi.com/messages/?session_id=<from the SSE event>
+Header       Authorization: Bearer sk-YOUR_KEY
+```
 
+### Dify / n8n / Coze / GPT Actions
+Import `https://lucydomi.com/mcp/openapi.json`, set auth to Bearer `sk-YOUR_KEY`. If the importer rejects 3.1, use `https://lucydomi.com/mcp/openapi.json?spec=3.0`.
+
+### LangChain / custom Python (no MCP needed)
+```python
+import json, urllib.request
+req = urllib.request.Request(
+    "https://lucydomi.com/mcp/v1/search_creators",
+    data=json.dumps({"platform": "tiktok", "keyword": "coffee", "limit": 3}).encode(),
+    headers={"Content-Type": "application/json", "Authorization": "Bearer sk-YOUR_KEY"},
+)
+print(json.load(urllib.request.urlopen(req)))
+```
+Tool schemas for function calling: `GET https://lucydomi.com/mcp/tools?format=openai`
+
+### Local package
 ```bash
 pip install busybee-mcp
 BUSYBEE_API_KEY=sk-YOUR_KEY busybee-mcp          # stdio
-BUSYBEE_API_KEY=sk-YOUR_KEY busybee-mcp http     # streamable-http on :3013
+BUSYBEE_API_KEY=sk-YOUR_KEY busybee-mcp http     # serve all transports on :3013
 ```
-
----
-
-## Try it without a client
-
-```bash
-curl -s https://lucydomi.com/mcp \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json, text/event-stream" \
-  -H "Authorization: Bearer sk-YOUR_KEY" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call",
-       "params":{"name":"search_creators",
-                 "arguments":{"platform":"tiktok","keyword":"coffee","limit":3}}}'
-```
-
-Python example: [`examples/quickstart.py`](examples/quickstart.py)
 
 ---
 
 ## Design decisions worth knowing
 
-- **Ten tools, not a thousand.** Call a business intent, not an endpoint.
+- **Ten tools, not a thousand.** Call a business intent, not an endpoint. The more tools a model sees, the more often it picks wrong and burns money.
 - **Normalized fields.** `author / text / created_at / stats` mean the same thing on every platform.
-- **Pay per call, priced per endpoint.** Cheap calls cost fractions of a cent; heavy ones cost more. The price for each call is visible in your console.
-- **Cost transparency inside the tool result.** `cost_usd` + `balance_usd` on every response.
-- **Failures are not billed.** A failed upstream call returns an error and costs nothing.
-- **Clean errors.** No stack traces, no third-party names, no vendor documentation links leaking into your agent's context.
+- **One implementation behind every protocol.** MCP, SSE and REST share the same dispatch layer, so behavior can't drift between clients.
+- **Pay per call, priced per endpoint.** Cheap calls cost fractions of a cent. Price is visible in your console.
+- **Cost transparency inside the result.** `cost_usd` + `balance_usd` on every response.
+- **Failures are not billed.**
+- **Clean errors.** No stack traces, no third-party vendor names, no upstream documentation links leaking into your agent's context.
+- **CORS enabled**, so browser-based agents and web widgets can call it directly.
 
-## Errors you may see
+## Errors
 
 | `error` | Meaning | What to do |
 |---|---|---|
-| `no_api_key` | No key configured | Set `BUSYBEE_API_KEY` / the `Authorization` header |
+| `no_api_key` | No key supplied | Add `Authorization: Bearer sk-...`, `X-API-Key`, or `?api_key=` |
 | `unauthorized` | Key invalid or deleted | Issue a new key in the console |
 | `insufficient_balance` | Out of credit | Top up |
 | `forbidden` | Key group doesn't cover that platform | Create a key in the right group |
 | `rate_limited` | Too many requests | Back off and retry |
+| `unsupported_tool` | That platform doesn't expose the tool | Call `list_platforms` to see the matrix |
 | `upstream_error` | Temporary provider failure | Retry once; not billed |
 
 ## Scope and compliance
 
-BusyBee serves **public** social media data only, and only to users **outside mainland China**. Do not use it to build profiles of private individuals, to scrape private accounts, to manipulate engagement, or to train models on personal data without a lawful basis. See the [data policy](https://lucydomi.com/data-policy).
+BusyBee serves **public** social media data only, and only to users **outside mainland China**. Do not use it to profile private individuals, scrape private accounts, manipulate engagement, or train models on personal data without a lawful basis. See the [data policy](https://lucydomi.com/data-policy).
 
 ## License
 
-MIT — see [LICENSE](LICENSE). The service itself is hosted and metered; this repository contains the client-side MCP server.
+MIT — see [LICENSE](LICENSE). This repository is the client-side MCP server; the hosted service is metered separately.
 
 ---
 
 ## 中文速览
 
-**BusyBee MCP** 把 TikTok、Instagram、YouTube、X、抖音、小红书六个平台的公开数据，压成 **10 个业务级工具 + 一套统一字段**，任何支持 MCP 的 AI 客户端（Claude Code / Cursor / Cline / Claude Desktop）装上就能用。
+**BusyBee MCP** 把 TikTok、Instagram、YouTube、X、抖音、小红书六个平台的公开数据，压成 **10 个业务级工具 + 一套统一字段**，**同一台服务器支持四种接入方式**：
 
-- 服务地址：`https://lucydomi.com/mcp`（远程，无需本地安装）
-- 也可以本地装：`pip install busybee-mcp`
-- 计费：按次，每次返回都带本次花费与余额
-- 失败不扣费；报错是干净中文/英文，不暴露任何上游信息
+| 你的 AI 工具 | 接入地址 |
+|---|---|
+| Claude Code / Cursor / Cline（MCP 新版） | `https://lucydomi.com/mcp` |
+| 只认旧版 SSE 的客户端 | `https://lucydomi.com/sse` |
+| Dify / n8n / Coze / GPT Actions（OpenAPI） | `https://lucydomi.com/mcp/openapi.json` |
+| 任何能发 HTTP 的程序 | `https://lucydomi.com/mcp/v1/<工具名>` |
 
-注册后在控制台建 `sk-` 开头的密钥即可。
+- 密钥：注册后在控制台建 `sk-` 开头的串
+- 计费：按次，每次返回都带本次花费与余额；失败不扣费
+- 报错是干净中文/英文，不暴露任何上游信息
