@@ -1,0 +1,38 @@
+name: Publish to PyPI
+
+# 用 PyPI 的 Trusted Publishing（OIDC）发布，不需要在仓库里存任何 token。
+# 前提：PyPI 账号里已配置 "pending publisher"：
+#   Project: busybee-mcp | Owner: danfeistar | Repo: busybee-mcp
+#   Workflow: publish-pypi.yml | Environment: pypi
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "输入 yes 确认发布到 PyPI 正式仓"
+        required: true
+        default: "no"
+  release:
+    types: [published]
+
+jobs:
+  build-and-publish:
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.confirm == 'yes'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write   # Trusted Publishing 必需
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: 构建 sdist 与 wheel
+        run: |
+          python -m pip install --upgrade build twine
+          python -m build
+          twine check dist/*
+
+      - name: 发布到 PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
