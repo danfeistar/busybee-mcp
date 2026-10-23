@@ -1,0 +1,35 @@
+name: Publish to MCP Registry
+
+# 远程托管型 server（只有 remotes，没有 packages），因此不需要 npm/PyPI 步骤，
+# 用 OIDC 认证（id-token: write），不需要在仓库里存任何密钥。
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # OIDC 认证必需
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: 用 tag 覆盖 server.json 的版本号
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          if [ -n "$VERSION" ] && [ "$VERSION" != "$GITHUB_REF" ]; then
+            jq --arg v "$VERSION" '.version = $v' server.json > server.tmp && mv server.tmp server.json
+          fi
+          cat server.json
+
+      - name: 安装 mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: 认证（GitHub OIDC）
+        run: ./mcp-publisher login github-oidc
+
+      - name: 发布到官方 MCP Registry
+        run: ./mcp-publisher publish

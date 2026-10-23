@@ -1,0 +1,26 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.danfeistar/busybee",
+  "title": "BusyBee — Social Media Data",
+  "description": "Social media data for AI agents: creators, posts, comments, comment insights and trending boards across TikTok, Instagram, YouTube, X (Twitter), Douyin and Xiaohongshu. Read-only, pay per call.",
+  "version": "0.2.1",
+  "websiteUrl": "https://lucydomi.com/mcp-guide",
+  "repository": {
+    "url": "https://github.com/danfeistar/busybee-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://lucydomi.com/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <your API key>. Get one at https://lucydomi.com/sign-up",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
