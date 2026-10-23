@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish to PyPI (manual)
 
 # 用 PyPI 的 Trusted Publishing（OIDC）发布，不需要在仓库里存任何 token。
 # 前提：PyPI 账号里已配置 "pending publisher"：
@@ -11,8 +11,6 @@ on:
         description: "输入 yes 确认发布到 PyPI 正式仓"
         required: true
         default: "no"
-  release:
-    types: [published]
 
 jobs:
   build-and-publish:

@@ -1,4 +1,0 @@
-mcp>=2.0.0
-
-[http]
-uvicorn>=0.30
