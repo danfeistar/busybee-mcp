@@ -1,0 +1,2 @@
+[console_scripts]
+busybee-mcp = busybee_mcp.cli:main
