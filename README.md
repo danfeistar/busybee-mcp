@@ -21,7 +21,7 @@ Most "social data for AI" products ship one transport and hope your client speak
 |---|---|---|
 | **Claude Code** | Streamable HTTP | `claude mcp add busybee --transport http https://lucydomi.com/mcp --header "Authorization: Bearer sk-..."` |
 | **Cursor / Cline / Windsurf / VS Code** | Streamable HTTP | add to `mcp.json` (see below) |
-| **Claude Desktop** | stdio | `uvx busybee-mcp` with `BUSYBEE_API_KEY` |
+| **Claude Desktop** | stdio | `uvx --from git+https://github.com/danfeistar/busybee-mcp busybee-mcp` with `BUSYBEE_API_KEY` (not on PyPI yet) |
 | **Older MCP clients (2024-11 era)** | SSE only | `https://lucydomi.com/sse` + `https://lucydomi.com/messages/` |
 | **Dify / n8n / Coze / FastGPT** | OpenAPI / plain HTTP | import `https://lucydomi.com/mcp/openapi.json` (3.1), or `?spec=3.0` for older importers |
 | **LangChain / LlamaIndex / custom code** | tools JSON or HTTP | `https://lucydomi.com/mcp/tools?format=openai`, or call REST directly |
@@ -98,6 +98,7 @@ claude mcp add busybee --transport http https://lucydomi.com/mcp \
   "mcpServers": {
     "busybee": {
       "command": "uvx",
+      "args": ["--from", "git+https://github.com/danfeistar/busybee-mcp", "busybee-mcp"],
       "args": ["busybee-mcp"],
       "env": { "BUSYBEE_API_KEY": "sk-YOUR_KEY" }
     }

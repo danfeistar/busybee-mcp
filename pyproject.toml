@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "busybee-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "BusyBee Data MCP server — public social media data for AI agents (TikTok, Instagram, YouTube, X, Douyin, Xiaohongshu)."
 readme = "README.md"
 requires-python = ">=3.10"

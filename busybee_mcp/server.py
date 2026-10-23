@@ -16,7 +16,7 @@ from mcp.server import MCPServer
 from . import dispatch
 from .client import SIGNUP_URL, Client
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 MAX_LIMIT = dispatch.MAX_LIMIT
 
 # 远程模式：HTTP 头 / 查询参数里的 API Key 通过 contextvar 传进来

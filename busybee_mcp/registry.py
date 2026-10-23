@@ -63,13 +63,17 @@ SPEC: dict[tuple[str, str], dict] = {
     # ---------------- 抖音 ----------------
     ("douyin", "search_creators"): {
         "path": DY_SEARCH + "/fetch_user_search", "method": "POST", "body": True,
-        "params": {"keyword": "keyword", "cursor": "cursor", "search_id": "search_id"},
-        "list": "data.user_list", "item": "user_info", "kind": "user",
+        "params": {"keyword": "keyword", "cursor": "cursor"},
+        # 元素里没有干净的 user_info，用户字段塞在 dynamic_patch.raw_data（JSON 字符串）
+        "list": "data.user_list", "item": "dynamic_patch.raw_data", "kind": "user",
+        "body_defaults": {"cursor": 0},
     },
     ("douyin", "search_posts"): {
-        "path": DY_SEARCH + "/fetch_video_search_v5", "method": "POST", "body": True,
-        "params": {"keyword": "keyword", "cursor": "cursor", "search_id": "search_id"},
+        # v5 / v4 / general_v3 上游已 400，v3 实测可用（参数名是 query，POST body）
+        "path": DY_SEARCH + "/fetch_video_search_v3", "method": "POST", "body": True,
+        "params": {"keyword": "query"},
         "list": "data.data", "item": None, "kind": "post",
+        "body_defaults": {"page": 1},
     },
     ("douyin", "get_creator"): {
         "path": DY + "/handler_user_profile", "method": "GET",
@@ -93,7 +97,8 @@ SPEC: dict[tuple[str, str], dict] = {
     },
     ("douyin", "get_trending"): {
         "path": DY + "/fetch_hot_search_list", "method": "GET",
-        "params": {"limit": "count"},
+        # 该接口只认 board_type / board_sub_type，没有 count，条数在本地截断
+        "params": {},
         "list": "data.data.word_list", "item": None, "kind": "trend",
     },
     # ---------------- 小红书 ----------------
@@ -113,13 +118,19 @@ SPEC: dict[tuple[str, str], dict] = {
         "list": None, "item": "data.data", "kind": "user",
     },
     ("xiaohongshu", "list_creator_posts"): {
-        "path": XHS + "/get_user_posted_notes", "method": "GET",
-        "params": {"creator": "user_id", "cursor": "cursor"},
-        "list": "data.data.notes", "item": None, "kind": "post",
+        # app_v2/get_user_posted_notes 上游 400，改 pgy 系；page_size 硬上限 8
+        "path": "/api/v1/xiaohongshu/pgy/get_blogger_notes_v2", "method": "POST", "body": True,
+        "params": {"creator": "user_id", "limit": "page_size"},
+        "list": "data.data.noteList", "item": "noteInfo", "kind": "post", "limit_max": 8,
+    },
+    ("xiaohongshu", "get_post"): {
+        "path": "/api/v1/xiaohongshu/pgy/get_note_detail", "method": "POST", "body": True,
+        "params": {"post_id": "note_id"},
+        "list": None, "item": "data.data", "kind": "post",
     },
     ("xiaohongshu", "get_comments"): {
         "path": XHS + "/get_note_comments", "method": "GET",
-        "params": {"post_id": "note_id", "limit": "page"},
+        "params": {"post_id": "note_id", "cursor": "cursor"},
         "list": "data.data.comments", "item": None, "kind": "comment",
     },
     # ---------------- Instagram ----------------
@@ -166,7 +177,8 @@ SPEC: dict[tuple[str, str], dict] = {
     },
     ("youtube", "get_comments"): {
         "path": YT + "/web_v2/get_video_comments", "method": "GET",
-        "params": {"post_id": "video_id", "cursor": "continuation_token", "limit": "sort_by"},
+        "params": {"post_id": "video_id", "cursor": "continuation_token"},
+        # 上游无 count/sort_by 之外的控制位，sort_by 是枚举(0/1)，不可塞 limit 值
         "list": "data.comments", "item": None, "kind": "comment",
     },
     # ---------------- X / Twitter ----------------

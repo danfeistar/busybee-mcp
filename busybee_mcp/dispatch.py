@@ -7,6 +7,8 @@ TOOL_SPECS 同时用于：
 """
 from __future__ import annotations
 
+import json
+
 from typing import Any
 
 from . import insights, registry
@@ -59,7 +61,7 @@ TOOL_SPECS: dict[str, dict] = {
         },
     },
     "list_creator_posts": {
-        "description": "拉某个账号最近发布的作品列表。",
+        "description": "拉某个账号最近发布的作品列表。creator 同 get_creator（handle / id / 主页链接皆可）。",
         "parameters": {
             "type": "object",
             "properties": {"platform": P_PLATFORM,
@@ -78,7 +80,7 @@ TOOL_SPECS: dict[str, dict] = {
         },
     },
     "get_comments": {
-        "description": "拉某条内容的评论列表，返回统一字段：评论人、内容、点赞、时间。",
+        "description": "拉某条内容的评论列表，返回统一字段：评论人、内容、点赞、时间。post_id 可传 id 或链接。",
         "parameters": {
             "type": "object",
             "properties": {"platform": P_PLATFORM,
@@ -133,8 +135,10 @@ def _build_params(spec: dict, args: dict, forced: dict | None = None) -> tuple[d
             continue
         (body if spec.get("body") else params)[api_name] = val
     if spec.get("body"):
-        body.setdefault("cursor", 0)
-        body.setdefault("search_id", "")
+        # 只给真有这些字段的接口补默认值：pgy 系是严格校验（多一个字段就 422），
+        # 全局硬塞 cursor/search_id 会把它们全打挂
+        for k, v in (spec.get("body_defaults") or {}).items():
+            body.setdefault(k, v)
         return params, body
     return params, None
 
@@ -151,6 +155,13 @@ def _extract(j: dict, spec: dict, limit: int) -> list[dict]:
     out = []
     for i, el in enumerate(arr[:limit]):
         obj = dig(el, item_path, default=el) if item_path else el
+        if isinstance(obj, str):  # 有些接口把真实对象塞成 JSON 字符串
+            try:
+                obj = json.loads(obj)
+            except ValueError:
+                obj = {}
+            if isinstance(obj, dict) and isinstance(obj.get("user_info"), dict):
+                obj = obj["user_info"]  # 抖音 user_list[].dynamic_patch.raw_data
         if isinstance(obj, dict) and obj:
             out.append(normalize(platform, kind, obj, index=i))
     return out
@@ -170,6 +181,48 @@ def _platforms_payload() -> dict:
             "note": "国内平台（douyin / xiaohongshu）需要国内分组的密钥；海外平台用海外分组。"}
 
 
+def _lookup_creator_id(client: Client, platform: str, creator: str) -> str:
+    """把 handle 解析成接口要的平台 id。客户拿到 handle 就传 handle 是常态，
+    不解析就会直接把 handle 当 id 发出去，上游回 400。"""
+    import re as _re
+
+    c = str(creator or "").strip().lstrip("@")
+    if not c:
+        return c
+    try:
+        if platform == "xiaohongshu":
+            if _re.fullmatch(r"[0-9a-f]{24}", c):
+                return c
+            spec = registry.spec_for("xiaohongshu", "search_creators")
+            j = client.call_endpoint(spec["path"], params={"keyword": c, "page": 1},
+                                    method=spec.get("method", "GET"))
+            users = dig(j, "data.data.users", default=[]) or []
+            for u in users:
+                if str(u.get("red_id") or "").lower() == c.lower() and u.get("id"):
+                    return str(u["id"])
+            if users and users[0].get("id"):
+                return str(users[0]["id"])
+        elif platform == "douyin":
+            if c.startswith("MS4wLjAB"):
+                return c
+            spec = registry.spec_for("douyin", "search_creators")
+            j = client.call_endpoint(spec["path"], params={}, method="POST",
+                                    body={"keyword": c, "cursor": 0})
+            for el in dig(j, "data.user_list", default=[]) or []:
+                raw = dig(el, "dynamic_patch.raw_data")
+                ui = {}
+                if isinstance(raw, str):
+                    try:
+                        ui = (json.loads(raw) or {}).get("user_info") or {}
+                    except ValueError:
+                        ui = {}
+                if str(ui.get("unique_id") or "").lower() == c.lower() and ui.get("sec_uid"):
+                    return str(ui["sec_uid"])
+    except Exception:
+        return c
+    return c
+
+
 def _run(platform: str, tool: str, args: dict, limit: int, client: Client) -> dict:
     platform = (platform or "").strip().lower()
     if platform not in registry.PLATFORMS:
@@ -181,8 +234,10 @@ def _run(platform: str, tool: str, args: dict, limit: int, client: Client) -> di
     except KeyError as e:
         return {"ok": False, "error": "unsupported_tool", "message": str(e).strip('"')}
 
-    limit = max(1, min(int(limit or 20), MAX_LIMIT))
+    limit = max(1, min(int(limit or 20), MAX_LIMIT, int(spec.get("limit_max") or MAX_LIMIT)))
     forced = None
+    if tool in ("get_creator", "list_creator_posts") and platform in ("xiaohongshu", "douyin") and args.get("creator"):
+        args = {**args, "creator": _lookup_creator_id(client, platform, str(args["creator"]))}
     if tool == "get_creator":
         try:
             forced = registry.resolve_creator(platform, str(args.get("creator") or ""))
@@ -208,9 +263,77 @@ def _run(platform: str, tool: str, args: dict, limit: int, client: Client) -> di
     return out
 
 
+def _from_url(value: str) -> str:
+    """从内容链接里抠出内容 id —— 很多 agent 手上只有 url，直接丢 url 过来。"""
+    import re
+    v = value.strip()
+    pats = (
+        r"tiktok\.com/@[^/]+/video/(\d+)",
+        r"douyin\.com/video/(\d+)",
+        r"(?:youtube\.com/(?:watch\?v=|shorts/|embed/)|youtu\.be/)([A-Za-z0-9_-]{6,})",
+        r"(?:twitter|x)\.com/[^/]+/status/(\d+)",
+        r"instagram\.com/(?:p|reel|tv)/([A-Za-z0-9_-]+)",
+        r"xiaohongshu\.com/(?:explore|discovery/item)/([A-Za-z0-9]+)",
+    )
+    for p in pats:
+        m = re.search(p, v)
+        if m:
+            return m.group(1)
+    return v.rstrip("/").rsplit("/", 1)[-1].split("?")[0]
+
+
+PLATFORM_ALIASES = {
+    "tiktok": "tiktok", "tt": "tiktok", "抖音国际版": "tiktok",
+    "instagram": "instagram", "ig": "instagram", "ins": "instagram", "instagramreels": "instagram",
+    "youtube": "youtube", "yt": "youtube", "油管": "youtube",
+    "twitter": "twitter", "x": "twitter", "xcom": "twitter", "推特": "twitter",
+    "douyin": "douyin", "dy": "douyin", "抖音": "douyin",
+    "xiaohongshu": "xiaohongshu", "xhs": "xiaohongshu", "red": "xiaohongshu",
+    "rednote": "xiaohongshu", "小红书": "xiaohongshu",
+}
+_CREATOR_KEYS = ("creator", "id", "handle", "username", "user", "user_id",
+                 "creator_id", "unique_id", "sec_user_id", "account", "url")
+_POST_KEYS = ("post_id", "id", "post", "video_id", "note_id", "item_id",
+              "aweme_id", "content_id", "url", "link")
+_KEYWORD_KEYS = ("keyword", "q", "query", "search", "text", "term", "keywords")
+
+
+def _normalize_args(name: str, args: dict) -> dict:
+    """容忍各类 agent 的写法：id / handle / url / 中文平台名 / q 都认。
+    LLM 看到我们返回里字段叫 id，就会顺手传 id，这里必须接得住。"""
+    a = dict(args or {})
+
+    raw_platform = str(a.get("platform") or a.get("source") or "").strip().lower()
+    picked = PLATFORM_ALIASES.get(raw_platform, PLATFORM_ALIASES.get(raw_platform.replace(" ", ""), raw_platform))
+    if picked:
+        a["platform"] = picked
+
+    if name in ("get_creator", "list_creator_posts"):
+        if not a.get("creator"):
+            for k in _CREATOR_KEYS:
+                if a.get(k):
+                    v = str(a[k]).strip()
+                    a["creator"] = _from_url(v) if "http" in v else v.lstrip("@")
+                    break
+    elif name in ("get_post", "get_comments", "get_comment_insights"):
+        if not a.get("post_id"):
+            for k in _POST_KEYS:
+                if a.get(k):
+                    v = str(a[k]).strip()
+                    a["post_id"] = _from_url(v) if "/" in v else v
+                    break
+    if name in ("search_creators", "search_posts"):
+        if not a.get("keyword"):
+            for k in _KEYWORD_KEYS:
+                if a.get(k):
+                    a["keyword"] = str(a[k]).strip()
+                    break
+    return a
+
+
 def call_tool(name: str, args: dict | None = None, client: Client | None = None) -> dict:
     """所有入口（MCP / REST）都走这里。"""
-    args = dict(args or {})
+    args = _normalize_args(name, dict(args or {}))
     client = client or Client()
 
     if name not in TOOL_SPECS:
@@ -245,6 +368,7 @@ def call_tool(name: str, args: dict | None = None, client: Client | None = None)
                 result[k] = base[k]
         return result
 
-    platform = args.pop("platform", "douyin" if name == "get_trending" else "")
+    # 平台必须显式给：静默默认抖音会让海外密钥用户收到「无权限」，很坑
+    platform = args.pop("platform", "")
     limit = args.pop("limit", 20)
     return _run(platform, name, args, limit, client)

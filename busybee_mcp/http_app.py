@@ -22,6 +22,7 @@ import urllib.parse
 from contextlib import AsyncExitStack, asynccontextmanager
 
 from . import dispatch
+from . import __version__
 from .client import SIGNUP_URL, Client
 from .server import api_key_ctx, server
 
@@ -31,7 +32,7 @@ MCP_PATH = os.environ.get("BUSYBEE_MCP_PATH", "/mcp")
 SSE_PATH = os.environ.get("BUSYBEE_SSE_PATH", "/sse")
 MESSAGE_PATH = os.environ.get("BUSYBEE_MESSAGE_PATH", "/messages/")
 PUBLIC_BASE = os.environ.get("BUSYBEE_PUBLIC_BASE", "https://lucydomi.com").rstrip("/")
-VERSION = "0.2.0"
+VERSION = __version__
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get(
     "BUSYBEE_ALLOWED_HOSTS",

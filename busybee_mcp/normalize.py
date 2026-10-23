@@ -121,6 +121,21 @@ def douyin_user(u: dict) -> dict:
 
 
 def douyin_post(a: dict) -> dict:
+    if "itemId" in a and "aweme_id" not in a:  # v3 搜索的扁平结构
+        created = a.get("createTime")
+        if isinstance(created, str) and not created.isdigit():
+            created = created.replace("/", "-")
+        return {
+            "platform": "douyin",
+            "id": str(a.get("itemId") or ""),
+            "url": a.get("url") or ("https://www.douyin.com/video/%s" % a.get("itemId")),
+            "author": {"id": "", "handle": None, "name": a.get("nickname")},
+            "text": truncate(a.get("title"), 1200),
+            "created_at": created if isinstance(created, str) else unix_to_iso(created),
+            "stats": {"likes": to_int(a.get("likes")), "comments": 0, "shares": 0,
+                      "views": 0, "collects": 0},
+            "cover": a.get("thumbnail"),
+        }
     aid = first(dig(a, "aweme_id"), dig(a, "id"))
     st = dig(a, "statistics", default={}) or {}
     return {
@@ -190,6 +205,28 @@ def xhs_user(u: dict) -> dict:
 
 
 def xhs_note(n: dict) -> dict:
+    if "noteId" in n and not dig(n, "id"):
+        ui2 = {}
+        return {
+            "platform": "xiaohongshu",
+            "id": str(n.get("noteId") or ""),
+            "url": n.get("noteLink") or ("https://www.xiaohongshu.com/explore/%s" % n.get("noteId")),
+            "author": {"id": str(n.get("userId") or ""), "handle": n.get("redId"), "name": n.get("name")},
+            "text": truncate(first(n.get("title"), n.get("content"), n.get("desc")), 1200),
+            "created_at": (lambda v: v.replace("/", "-") if isinstance(v, str) and not v.isdigit()
+                           else unix_to_iso(v))(first(n.get("createTime"), n.get("time"),
+                                                       n.get("publishTime"), n.get("notePublishTime"))),
+            "stats": {
+                "likes": to_int(first(n.get("likedCount"), n.get("likeCount"), n.get("likes"))),
+                "comments": to_int(first(n.get("commentCount"), n.get("commentsCount"))),
+                "shares": to_int(first(n.get("shareCount"), n.get("sharedCount"))),
+                "views": to_int(first(n.get("viewCount"), n.get("views"), n.get("readNum"))),
+                "collects": to_int(first(n.get("collectedCount"), n.get("collectCount"), n.get("favNum"))),
+                "engage": to_int(first(n.get("engageNum"), default=0)),
+                "impressions": to_int(first(n.get("impNum"), default=0)),
+            },
+            "cover": first(n.get("headPhoto"), n.get("imageUrl"), n.get("cover"), n.get("image")),
+        }
     nid = first(dig(n, "id"), dig(n, "note_id"))
     ui = dig(n, "user", default={}) or {}
     return {
