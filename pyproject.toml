@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "busybee-mcp"
+version = "0.1.0"
+description = "BusyBee Data MCP server — public social media data for AI agents (TikTok, Instagram, YouTube, X, Douyin, Xiaohongshu)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "BusyBee Data" }]
+keywords = ["mcp", "social-media", "tiktok", "instagram", "youtube", "creator-discovery"]
+dependencies = ["mcp>=2.0.0"]
+
+[project.optional-dependencies]
+http = ["uvicorn>=0.30"]
+
+[project.urls]
+Homepage = "https://lucydomi.com"
+
+[project.scripts]
+busybee-mcp = "busybee_mcp.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["busybee_mcp*"]

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "busybee": {
+      "url": "https://lucydomi.com/mcp",
+      "headers": { "Authorization": "Bearer sk-YOUR_KEY" }
+    }
+  }
+}
