@@ -1,0 +1,165 @@
+{
+ "total": 20,
+ "sentiment": {
+  "positive": 5,
+  "negative": 0,
+  "neutral": 15,
+  "positive_hits": 5,
+  "negative_hits": 0
+ },
+ "questions": {
+  "count": 9,
+  "ratio": 0.45
+ },
+ "engagement": {
+  "max_likes": 1010000,
+  "avg_likes": 160445.6
+ },
+ "top_phrases": [
+  {
+   "phrase": "rick",
+   "count": 10
+  },
+  {
+   "phrase": "rolled",
+   "count": 5
+  },
+  {
+   "phrase": "link",
+   "count": 5
+  },
+  {
+   "phrase": "fact",
+   "count": 3
+  },
+  {
+   "phrase": "views",
+   "count": 3
+  },
+  {
+   "phrase": "here",
+   "count": 3
+  },
+  {
+   "phrase": "entire",
+   "count": 2
+  },
+  {
+   "phrase": "because",
+   "count": 2
+  },
+  {
+   "phrase": "quiz",
+   "count": 2
+  },
+  {
+   "phrase": "well",
+   "count": 2
+  },
+  {
+   "phrase": "kahoot",
+   "count": 2
+  },
+  {
+   "phrase": "put",
+   "count": 2
+  },
+  {
+   "phrase": "teacher",
+   "count": 2
+  },
+  {
+   "phrase": "youtube",
+   "count": 2
+  },
+  {
+   "phrase": "said",
+   "count": 2
+  }
+ ],
+ "top_liked": [
+  {
+   "text": "There's a reason this has over 600M views...",
+   "likes": 1010000,
+   "author": {
+    "channel_id": "UCv5mo0iXze8aKFjvdp51Fjg",
+    "display_name": "@Timeworks",
+    "channel_url": "https://www.youtube.com/@Timeworks",
+    "avatar_url": "https://yt3.ggpht.com/42ffwzIe9i55CVc2WIVrhdTRYZS7wA97YQxd-ZxUYhzj3tVVHXMW1vuLKAxnc1l7jlaVkpcecI4=s88-c-k-c0x00ffffff-no-rj",
+    "avatar_thumbnails": null,
+    "is_verified": true,
+    "is_creator": false,
+    "is_artist": false
+   }
+  },
+  {
+   "text": "Gonna flag this for nudity so I can rick roll the YouTube staff",
+   "likes": 560000,
+   "author": {
+    "channel_id": "UCWf34D_s8K_m2vwBISIDWtg",
+    "display_name": "@Oatman69",
+    "channel_url": "https://www.youtube.com/@Oatman69",
+    "avatar_url": "https://yt3.ggpht.com/ghenbV7T5VMOA3iqp3PThC82exqcu7iVng_iWNx1Ujak72Ti4oZZ_XzSVzIrfk9arP1XrFtnZA=s88-c-k-c0x00ffffff-no-rj",
+    "avatar_thumbnails": null,
+    "is_verified": false,
+    "is_creator": false,
+    "is_artist": false
+   }
+  },
+  {
+   "text": "Ok let’s be honest here\nRick rolling is the one meme that will never die",
+   "likes": 420000,
+   "author": {
+    "channel_id": "UCNRtoaGfHCLksAz2ofEAfgA",
+    "display_name": "@JetpackGamer456",
+    "channel_url": "https://www.youtube.com/@JetpackGamer456",
+    "avatar_url": "https://yt3.ggpht.com/ytc/AIdro_nyhrpC59MDbvwlTlkeHmG6xvzXfJQdI4SBR7r8a5XLhJg=s88-c-k-c0x00ffffff-no-rj",
+    "avatar_thumbnails": null,
+    "is_verified": false,
+    "is_creator": false,
+    "is_artist": false
+   }
+  },
+  {
+   "text": "Is everyone going to ignore the fact that Rick Astley looks like a twelve year old boy but has a uniquely deep voice?",
+   "likes": 290000,
+   "author": {
+    "channel_id": "UCNLgzvqrGzFi5SEAbVkFchg",
+    "display_name": "@candycake9531",
+    "channel_url": "https://www.youtube.com/@candycake9531",
+    "avatar_url": "https://yt3.ggpht.com/ytc/AIdro_mEO82VrM8XtyGrBUkJgbAYgpAmDpUZixd1QvK9kyA=s88-c-k-c0x00ffffff-no-rj",
+    "avatar_thumbnails": null,
+    "is_verified": false,
+    "is_creator": false,
+    "is_artist": false
+   }
+  },
+  {
+   "text": "Let’s put the meme aside, this is actually a banging song.",
+   "likes": 210000,
+   "author": {
+    "channel_id": "UCHpvHTRSILoOFKWX5oFCYDA",
+    "display_name": "@LK-ht7qz",
+    "channel_url": "https://www.youtube.com/@LK-ht7qz",
+    "avatar_url": "https://yt3.ggpht.com/RJnrz4JwDmHNgtFdnVdJ6FKLiuo59IuHkY6bvqaEJM0mxTSlq0GKQs_ItA-sJ8QMqps_lf9Lvgs=s88-c-k-c0x00ffffff-no-rj",
+    "avatar_thumbnails": null,
+    "is_verified": false,
+    "is_creator": false,
+    "is_artist": false
+   }
+  }
+ ],
+ "summary": "共分析 20 条评论；其中 9 条（45%）是提问，说明购买意图明确；情绪正面为主（正面 5 条 / 负面 0 条）；高频词：rick、rolled、link、fact、views；单条最高点赞 1010000",
+ "post": {
+  "platform": "youtube",
+  "id": "dQw4w9WgXcQ",
+  "text": null,
+  "stats": {}
+ },
+ "ok": true,
+ "platform": "youtube",
+ "tool": "get_comment_insights",
+ "sampled": 20,
+ "cost_usd": 0.003,
+ "balance_usd": 3.9945
+}

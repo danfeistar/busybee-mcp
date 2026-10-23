@@ -55,20 +55,32 @@ Discovery document (machine-readable, tells an agent what's available): `https:/
 
 ## One schema, every platform
 
+Same field names whether the item came from TikTok, Instagram, YouTube, X, Douyin or Xiaohongshu:
+
 ```json
 {
-  "platform": "tiktok",
-  "id": "7690199760430566669",
-  "url": "https://www.tiktok.com/@creator/video/7690199760430566669",
-  "author": { "id": "6948174171005158405", "handle": "goldenbrown.coffee", "name": "Golden Brown Coffee" },
-  "text": "Spanish latte, but make it iced",
-  "created_at": "2026-10-18T09:12:00Z",
-  "stats": { "likes": 41200, "comments": 812, "shares": 2331, "views": 918000, "collects": 5120 },
-  "cover": "https://..."
+  "ok": true, "platform": "tiktok", "tool": "search_posts", "count": 6,
+  "items": [
+    {
+      "platform": "tiktok",
+      "id": "7690199760430566669",
+      "url": "https://www.tiktok.com/@laceyglasley/video/7690199760430566669",
+      "author": { "id": "7066058701889012782", "handle": "laceyglasley", "name": "Lacey" },
+      "text": "Salted Honey Spanish Latte … #coffeetok #spanishlatte",
+      "created_at": "2026-09-27T13:03:24+00:00",
+      "stats": { "likes": 68357, "comments": 165, "shares": 7691, "views": 1009685, "collects": 17806 },
+      "cover": "https://…"
+    }
+  ],
+  "cost_usd": 0.003, "balance_usd": 3.93
 }
 ```
 
-Every response also carries `cost_usd` and `balance_usd`, so the agent can budget itself and you can see what a task actually cost.
+**This is a real response, not a mock-up** — captured from a live call, only the share URL query string and the caption were trimmed. Two full raw responses are checked in:
+[`examples/1_tiktok_coffee.json`](examples/1_tiktok_coffee.json) (search_posts) and
+[`examples/2_youtube_insights.json`](examples/2_youtube_insights.json) (comment insights on 20 comments).
+
+Every response carries `cost_usd` and `balance_usd`, so the agent can budget itself and you can see what a task actually cost.
 
 ---
 
@@ -116,7 +128,17 @@ Header       Authorization: Bearer sk-YOUR_KEY
 ```
 
 ### Dify / n8n / Coze / GPT Actions
-Import `https://lucydomi.com/mcp/openapi.json`, set auth to Bearer `sk-YOUR_KEY`. If the importer rejects 3.1, use `https://lucydomi.com/mcp/openapi.json?spec=3.0`.
+
+Import the OpenAPI schema, set auth to Bearer `sk-YOUR_KEY`. If the importer rejects 3.1, use the 3.0 view.
+
+| Platform | Where to paste | URL |
+|---|---|---|
+| Dify | Tools → Custom → Add OpenAPI tool | `https://lucydomi.com/mcp/openapi.json?spec=3.0` |
+| n8n | HTTP Request node, or import as a credential-protected API | `https://lucydomi.com/mcp/openapi.json` |
+| Coze | Plugin → Import from OpenAPI | `https://lucydomi.com/mcp/openapi.json?spec=3.0` |
+| OpenAI GPT Actions | Actions → Import from URL | `https://lucydomi.com/mcp/openapi.json` |
+
+Server-side endpoints derive automatically from the schema; each operation maps 1:1 to a tool name, so `search_posts` in the schema is `POST https://lucydomi.com/mcp/v1/search_posts`.
 
 ### LangChain / custom Python (no MCP needed)
 ```python

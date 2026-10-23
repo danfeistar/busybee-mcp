@@ -1,0 +1,23 @@
+{
+ "ok": true,
+ "platform": "tiktok",
+ "tool": "get_creator",
+ "count": 1,
+ "items": [
+  {
+   "platform": "tiktok",
+   "id": "7096781983184159749",
+   "handle": "yourcoffeedude",
+   "name": "YourCoffeeDude",
+   "bio": "🔸Aesthetic Homecafe Content🔸\n👇🏽 10% off Earl Grey Matcha 👇🏽",
+   "followers": 567790,
+   "following": 13,
+   "posts": 564,
+   "verified": false,
+   "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-maliva-avt-0068/4728264aff2a1d786211f1625624e843~tplv-tiktok-shrink:282:282.jpeg?dr=9622&refresh_token=7cc2bc79&x-expires=1792771200&x-signature=fCEu7PP%2ByZ1%2Fw8g3FG9qD2bwYoo%3D&t=4d5b0474&ps=13740610&shp=2472a6c6&shcp=9b759fb9&idc=useast5&s=PACK_GO_API",
+   "url": "https://www.tiktok.com/@yourcoffeedude"
+  }
+ ],
+ "cost_usd": 0.003,
+ "balance_usd": 3.9915
+}
