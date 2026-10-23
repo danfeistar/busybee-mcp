@@ -1,5 +1,7 @@
 # BusyBee MCP
 
+[![PyPI](https://img.shields.io/pypi/v/busybee-mcp.svg)](https://pypi.org/project/busybee-mcp/)
+
 **Public social media data for AI agents.** Ten business-level tools, one schema — TikTok, Instagram, YouTube, X (Twitter), Douyin and Xiaohongshu.
 
 Ask your agent *"who are the fastest-growing coffee creators on TikTok right now, and what do their comment sections complain about?"* — it answers with real data, in one conversation.
@@ -21,7 +23,7 @@ Most "social data for AI" products ship one transport and hope your client speak
 |---|---|---|
 | **Claude Code** | Streamable HTTP | `claude mcp add busybee --transport http https://lucydomi.com/mcp --header "Authorization: Bearer sk-..."` |
 | **Cursor / Cline / Windsurf / VS Code** | Streamable HTTP | add to `mcp.json` (see below) |
-| **Claude Desktop** | stdio | `uvx --from git+https://github.com/danfeistar/busybee-mcp busybee-mcp` with `BUSYBEE_API_KEY` (not on PyPI yet) |
+| **Claude Desktop** | stdio | `uvx busybee-mcp` with `BUSYBEE_API_KEY` |
 | **Older MCP clients (2024-11 era)** | SSE only | `https://lucydomi.com/sse` + `https://lucydomi.com/messages/` |
 | **Dify / n8n / Coze / FastGPT** | OpenAPI / plain HTTP | import `https://lucydomi.com/mcp/openapi.json` (3.1), or `?spec=3.0` for older importers |
 | **LangChain / LlamaIndex / custom code** | tools JSON or HTTP | `https://lucydomi.com/mcp/tools?format=openai`, or call REST directly |
@@ -98,7 +100,7 @@ claude mcp add busybee --transport http https://lucydomi.com/mcp \
   "mcpServers": {
     "busybee": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/danfeistar/busybee-mcp", "busybee-mcp"],
+      "args": ["busybee-mcp"],
       "args": ["busybee-mcp"],
       "env": { "BUSYBEE_API_KEY": "sk-YOUR_KEY" }
     }
