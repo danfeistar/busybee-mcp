@@ -1,6 +1,10 @@
 # BusyBee MCP
 
 [![PyPI](https://img.shields.io/pypi/v/busybee-mcp.svg)](https://pypi.org/project/busybee-mcp/)
+[![Python](https://img.shields.io/pypi/pyversions/busybee-mcp.svg)](https://pypi.org/project/busybee-mcp/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Glama score](https://glama.ai/mcp/servers/danfeistar/busybee-mcp/badges/score.svg)](https://glama.ai/mcp/servers/danfeistar/busybee-mcp)
+[![MCP Registry](https://img.shields.io/badge/MCP%20Registry-active-6f42c1.svg)](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.danfeistar%2Fbusybee/versions/latest)
 
 **Public social media data for AI agents.** Ten business-level tools, one schema — TikTok, Instagram, YouTube, X (Twitter), Douyin and Xiaohongshu.
 
@@ -12,6 +16,19 @@ Protocols   MCP Streamable HTTP · MCP SSE (legacy) · REST/JSON · stdio
 Tools       10
 Billing     pay per call; every response returns cost_usd + balance_usd
 ```
+
+> **Try it in 30 seconds — no signup:** open **https://lucydomi.com/demo**, type a keyword, see the real response shape (3 free calls per device per day). When you want unlimited calls, grab a key at https://lucydomi.com/sign-up.
+
+---
+
+## Connect your agent
+
+Step-by-step guides, each with a config file you can copy verbatim:
+
+- [Claude Desktop / Claude Code](docs/claude-desktop.md) — local stdio via `uvx`
+- [Cursor / Cline / Windsurf / VS Code](docs/editors.md) — remote HTTP with a bearer header
+- [Dify / n8n / Coze / FastGPT](docs/lowcode.md) — import the OpenAPI spec, no code
+- [Plain HTTP / curl / any language](docs/rest.md) — REST endpoints and the tools JSON
 
 ---
 
