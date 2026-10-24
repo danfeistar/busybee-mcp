@@ -259,6 +259,21 @@ def build_app():
             await _json(send, 200 if result.get("ok") else 400, result)
             return
 
+        # ---- MCP 传输层鉴权闸：未带密钥直接 401
+        # 目的：让第三方目录/清单站的探测（只看 HTTP 状态码）读到真实的鉴权要求，
+        # 而不是握手成功后被当成「无需鉴权」。文档类路径（/healthz、/info、
+        # /openapi.json、/tools）在上面已放行，不受影响。
+        if (path.rstrip("/") == MCP_PATH.rstrip("/") or path.startswith(MCP_PATH + "/")
+                or path.rstrip("/") == SSE_PATH.rstrip("/") or path.startswith(MESSAGE_PATH)):
+            if not _pick_token(scope):
+                await _json(send, 401, {"ok": False, "error": "no_api_key",
+                                        "message": "缺少 API Key：加请求头 Authorization: Bearer ***"
+                                                   " 或 X-API-Key: ***（REST 也可用 ?api_key=sk-...）。",
+                                        "docs": PUBLIC_BASE + MCP_PATH + "/info",
+                                        "signup": SIGNUP_URL},
+                            extra_headers=[(b"www-authenticate", b'Bearer realm="busybee"')])
+                return
+
         # ---- 旧版 SSE 传输
         if path.rstrip("/") == SSE_PATH.rstrip("/") or path.startswith(MESSAGE_PATH):
             cvar = api_key_ctx.set(_pick_token(scope) or "")
