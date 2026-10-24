@@ -78,9 +78,11 @@ Each page carries a real captured response and copy-paste code, so you can skip 
 |---|---|---|---|---|
 | [TikTok](https://lucydomi.com/data/tiktok) | [YouTube](https://lucydomi.com/data/youtube) | [Search posts](https://lucydomi.com/tools/search-posts) | | [Claude Desktop](https://lucydomi.com/use-cases/claude-desktop) |
 | [X (Twitter)](https://lucydomi.com/data/twitter) | [Instagram](https://lucydomi.com/data/instagram) | [Comment insights](https://lucydomi.com/tools/comment-insights) | | [Cursor](https://lucydomi.com/use-cases/cursor) |
-| [Douyin](https://lucydomi.com/data/douyin) | [Xiaohongshu](https://lucydomi.com/data/xiaohongshu) | [Creator discovery](https://lucydomi.com/tools/creator-discovery) | | [Cline](https://lucydomi.com/use-cases/cline) · [Gemini CLI](https://lucydomi.com/use-cases/gemini-cli) |
+| [Douyin](https://lucydomi.com/data/douyin) | [Xiaohongshu](https://lucydomi.com/data/xiaohongshu) | [Creator discovery](https://lucydomi.com/tools/creator-discovery) | | [Cline](https://lucydomi.com/use-cases/cline) · [Gemini CLI](https://lucydomi.com/use-cases/gemini-cli) · [Windsurf](https://lucydomi.com/use-cases/windsurf) · [VS Code](https://lucydomi.com/use-cases/vscode) · [Dify](https://lucydomi.com/use-cases/dify) · [n8n](https://lucydomi.com/use-cases/n8n) |
 
-All 14 in one index: **https://lucydomi.com/resources** · machine index: **https://lucydomi.com/llms.txt**
+**Tutorials** — end-to-end workflows with real numbers: [mine demand from comments](https://lucydomi.com/guides/comment-research) · [build a creator database](https://lucydomi.com/guides/creator-database) · [cross-platform topic check](https://lucydomi.com/guides/content-calendar) · [competitor monitoring](https://lucydomi.com/guides/competitor-monitor)
+
+All 21 in one index: **https://lucydomi.com/resources** · machine index: **https://lucydomi.com/llms.txt** · everything in one file for LLMs: **https://lucydomi.com/llms-full.txt**
 
 ---
 
