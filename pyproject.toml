@@ -4,13 +4,31 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "busybee-mcp"
-version = "0.2.3"
+version = "0.2.4"
 description = "BusyBee Data MCP server — public social media data for AI agents (TikTok, Instagram, YouTube, X, Douyin, Xiaohongshu)."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "BusyBee Data" }]
-keywords = ["mcp", "social-media", "tiktok", "instagram", "youtube", "creator-discovery"]
+keywords = [
+    "mcp", "model-context-protocol", "mcp-server", "social-media", "social-data",
+    "tiktok", "instagram", "youtube", "twitter", "x", "douyin", "xiaohongshu",
+    "creator-discovery", "comments", "sentiment-analysis", "trends",
+    "llm", "ai-agent", "claude", "cursor", "data-api",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = ["mcp>=2.0.0"]
 
 [project.optional-dependencies]
@@ -18,6 +36,11 @@ http = ["uvicorn>=0.30"]
 
 [project.urls]
 Homepage = "https://lucydomi.com"
+Documentation = "https://lucydomi.com/mcp-guide"
+Repository = "https://github.com/danfeistar/busybee-mcp"
+Changelog = "https://github.com/danfeistar/busybee-mcp/releases"
+"Free demo" = "https://lucydomi.com/demo"
+"Doc index" = "https://lucydomi.com/resources"
 
 [project.scripts]
 busybee-mcp = "busybee_mcp.cli:main"

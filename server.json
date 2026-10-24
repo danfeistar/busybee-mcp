@@ -3,7 +3,7 @@
   "name": "io.github.danfeistar/busybee",
   "title": "BusyBee — Social Media Data",
   "description": "Social media data for AI agents: creators, posts, comments, insights, trending across 6 platforms.",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "websiteUrl": "https://lucydomi.com/mcp-guide",
   "repository": {
     "url": "https://github.com/danfeistar/busybee-mcp",
