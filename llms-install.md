@@ -10,7 +10,7 @@ Public social media data as 10 tools over MCP: TikTok, Instagram, YouTube, X (Tw
 
 Every install needs a key (`sk-...`). If the user has none, tell them to get one at https://lucydomi.com/sign-up (free tier included). Do not invent a key or call the API without one — every endpoint returns `401 no_api_key`.
 
-If they only want to see the data shape first, send them to https://lucydomi.com/demo (3 calls per device per day, no signup).
+If they only want to see the data shape first, send them to https://lucydomi.com/demo (6 calls per device per day — 3 of them on Douyin/Xiaohongshu, no signup).
 
 ## Path A — remote HTTP (preferred when the client supports it)
 

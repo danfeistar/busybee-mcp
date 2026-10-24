@@ -17,7 +17,7 @@ Tools       10
 Billing     pay per call; every response returns cost_usd + balance_usd
 ```
 
-> **Try it in 30 seconds — no signup:** open **https://lucydomi.com/demo**, type a keyword, see the real response shape (3 free calls per device per day). When you want unlimited calls, grab a key at https://lucydomi.com/sign-up.
+> **Try it in 30 seconds — no signup:** open **https://lucydomi.com/demo**, type a keyword, see the real response shape (6 free calls per device per day, 3 of them on Douyin/Xiaohongshu). When you want unlimited calls, grab a key at https://lucydomi.com/sign-up.
 
 ---
 
@@ -67,6 +67,49 @@ Discovery document (machine-readable, tells an agent what's available): `https:/
 | `check_balance` | "How much credit do I have left?" |
 
 `get_comment_insights` is the one people keep open: it samples comments, then returns sentiment split, question ratio, high-frequency phrases and top-liked comments — so the agent answers *"what do users actually want"* instead of dumping fifty raw rows.
+
+---
+
+## Docs by platform, by tool, by client
+
+Each page carries a real captured response and copy-paste code, so you can skip the README once you know what you need:
+
+| Platform | | Tool deep-dive | | Client setup |
+|---|---|---|---|---|
+| [TikTok](https://lucydomi.com/data/tiktok) | [YouTube](https://lucydomi.com/data/youtube) | [Search posts](https://lucydomi.com/tools/search-posts) | | [Claude Desktop](https://lucydomi.com/use-cases/claude-desktop) |
+| [X (Twitter)](https://lucydomi.com/data/twitter) | [Instagram](https://lucydomi.com/data/instagram) | [Comment insights](https://lucydomi.com/tools/comment-insights) | | [Cursor](https://lucydomi.com/use-cases/cursor) |
+| [Douyin](https://lucydomi.com/data/douyin) | [Xiaohongshu](https://lucydomi.com/data/xiaohongshu) | [Creator discovery](https://lucydomi.com/tools/creator-discovery) | | [Cline](https://lucydomi.com/use-cases/cline) · [Gemini CLI](https://lucydomi.com/use-cases/gemini-cli) |
+
+All 14 in one index: **https://lucydomi.com/resources** · machine index: **https://lucydomi.com/llms.txt**
+
+---
+
+## Cookbook — three scripts you can run right now
+
+Stdlib only, no dependencies. Each was run against the live API before being committed; the output below is real.
+
+| Script | Question it answers |
+|---|---|
+| [`examples/cookbook_comment_insights.py`](examples/cookbook_comment_insights.py) | What is the comment section actually asking? (search → hottest post → insights) |
+| [`examples/cookbook_creator_report.py`](examples/cookbook_creator_report.py) | Who are the creators in this niche? (creator search → recent posts → Markdown table) |
+| [`examples/cookbook_cross_platform.py`](examples/cookbook_cross_platform.py) | Which platform owns this topic? (one keyword, six platforms, same fields) |
+
+```bash
+export BUSYBEE_API_KEY=sk-...
+python examples/cookbook_cross_platform.py coffee
+```
+
+```
+平台          条数    最高互动      文案
+tiktok      10    9325976   ASMR SATISFACTION 🤎✨ Nothing beats puck …
+youtube     10    235306    The Espresso Revolution is Already Happe…
+twitter     10    20988483  NEW: Bikini barista takes out a hammer o…
+instagram   -     -         (该平台没有关键词搜内容)
+douyin      10    75063     coffee time.#海氏C9Pro咖啡机…
+xiaohongshu 10    14623     谁发明的这样喝咖啡？…
+```
+
+Note the Instagram row: it reports the gap instead of silently returning nothing — `list_platforms` tells your agent which tools each platform actually supports, so cross-platform jobs degrade instead of breaking.
 
 ---
 
