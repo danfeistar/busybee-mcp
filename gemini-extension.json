@@ -1,7 +1,7 @@
 {
   "name": "busybee",
-  "version": "0.2.3",
-  "description": "Public social media data for AI agents — TikTok, Instagram, YouTube, X (Twitter), Douyin and Xiaohongshu. Ten tools covering creators, posts, comments, comment insights, trending boards and balance. Pay per call.",
+  "version": "0.2.4",
+  "description": "Public social media data for AI agents — TikTok, Instagram, YouTube, X (Twitter), Douyin and Xiaohongshu. Ten tools covering creators, posts, comments, comment insights, trending boards and balance. Read-only public data, pay per call, free demo available.",
   "mcpServers": {
     "busybee": {
       "httpUrl": "https://lucydomi.com/mcp",
