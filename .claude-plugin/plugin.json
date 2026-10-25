@@ -1,0 +1,23 @@
+{
+  "name": "busybee",
+  "description": "Public social media data for agents — TikTok, Instagram, YouTube, X (Twitter), Douyin and Xiaohongshu. Search posts and creators, pull comments and comment insights, read trending boards. Read-only public data, pay per call.",
+  "version": "0.2.4",
+  "author": {
+    "name": "danfeistar",
+    "url": "https://github.com/danfeistar"
+  },
+  "homepage": "https://lucydomi.com/mcp-guide",
+  "repository": "https://github.com/danfeistar/busybee-mcp",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "social-media",
+    "tiktok",
+    "instagram",
+    "youtube",
+    "x",
+    "douyin",
+    "xiaohongshu",
+    "comments"
+  ]
+}
