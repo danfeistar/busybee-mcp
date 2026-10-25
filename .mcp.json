@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "busybee": {
+      "type": "http",
+      "url": "https://lucydomi.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${BUSYBEE_API_KEY}"
+      }
+    }
+  }
+}
