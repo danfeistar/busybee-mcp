@@ -4,6 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/busybee-mcp.svg)](https://pypi.org/project/busybee-mcp/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Glama score](https://glama.ai/mcp/servers/danfeistar/busybee-mcp/badges/score.svg)](https://glama.ai/mcp/servers/danfeistar/busybee-mcp)
+[![BusyBee MCP score on AI Agents Listing](https://aiagentslisting.com/busybee-mcp/badge.svg?variant=score)](https://aiagentslisting.com/mcp/busybee-mcp)
 [![MCP Registry](https://img.shields.io/badge/MCP%20Registry-active-6f42c1.svg)](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.danfeistar%2Fbusybee/versions/latest)
 
 **Public social media data for AI agents.** Ten business-level tools, one schema — TikTok, Instagram, YouTube, X (Twitter), Douyin and Xiaohongshu.
